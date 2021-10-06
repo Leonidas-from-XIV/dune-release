@@ -1,9 +1,14 @@
 (copy_files ../helpers/make_check_deterministic.exe)
+(copy_files ../../../bin/main.exe)
 
-(alias
- (name runtest)
- (deps make_check_deterministic.exe))
-
-(mdx
- (files run.t)
- (packages dune-release))
+(rule
+ (alias runtest)
+ (deps
+  (:x run.t)
+  make_check_deterministic.exe
+  main.exe)
+ (action
+  (progn
+   (copy main.exe dune-release.exe)
+   (run ocaml-mdx test %{x})
+   (diff? %{x} %{x}.corrected))))
